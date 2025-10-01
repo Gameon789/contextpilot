@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContextPilot - Never Walk Into a Meeting Unprepared</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        /* Custom styles matching Zentra design */
+        .btn-primary {
+            background-color: #000000;
+            color: white;
+            font-weight: 600;
+            padding: 16px 32px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border: 2px solid #000000;
+            font-size: 16px;
+            width: 100%;
+            max-width: 280px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #333333;
+            border-color: #333333;
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: #000000;
+            font-weight: 500;
+            padding: 16px 32px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border: 1px solid #e5e5e5;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f8f8f8;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Icons initialization
+        lucide.createIcons();
+        
+        // Mock data for meetings
+        const mockMeetings = [
+            {
+                id: 1,
+                title: 'Q4 Product Planning',
+                date: 'Today',
+                time: '2:00 PM - 3:00 PM',
+                attendees: 5,
+                description: 'Quarterly product roadmap review and planning session',
+                status: 'ready'
+            },
+            {
+                id: 2,
+                title: 'Team Standup',
+                date: 'Tomorrow',
+                time: '9:00 AM - 9:30 AM',
+                attendees: 8,
+                description: 'Daily team synchronization and progress update',
+                status: 'generating'
+            }
+        ];
+
+        // Landing Page Component - Matching Zentra Design Exactly
+        function LandingPage({ onNavigate }) {
+            return (
+                <div className="min-h-screen bg-white">
+                    {/* Main Content - Centered like Zentra */}
+                    <div className="hero-section">
+                        <div className="container text-center">
+                            {/* App Name/Logo */}
+                            <div className="mb-12">
+                                <h1 className="text-5xl font-bold text-gray-900 mb-4">ContextPilot</h1>
+                            </div>
+                            
+                            {/* Main Heading */}
+                            <div className="mb-8">
+                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                                    Never Walk Into a Meeting<br />Unprepared Again
+                                </h2>
+                                <p className="text-xl text-gray-600 leading-relaxed">
+                                    AI-powered meeting briefs that save you 15 minutes of prep time. Achieve your meeting goals - effortlessly.
+                                </p>
+                            </div>
+                            
+                            {/* Divider */}
+                            <div className="divider"></div>
+                            
+                            {/* Action Buttons */}
+                            <div className="space-y-4">
+                                <button 
+                                    onClick={() => onNavigate('signup')} 
+                                    className="btn-primary"
+                                >
+                                    Start Planning
+                                </button>
+                                <div>
+                                    <button 
+                                        onClick={() => onNavigate('login')} 
+                                        className="btn-secondary"
+                                    >
+                                        Already have an account? Log in
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Login Component - Updated to match design
+        function Login({ onNavigate, onLogin }) {
+            const [formData, setFormData] = React.useState({
+                email: '',
+                password: ''
+            });
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onLogin();
+                onNavigate('dashboard');
+            };
+
+            return (
+                <div className="min-h-screen bg-white flex flex-col justify-center">
+                    <div className="container">
+                        <div className="text-center mb-12">
+                            <h1 className="text-4xl font-bold text-gray-900 mb-4">ContextPilot</h1>
+                        </div>
+                        
+                        <div className="text-center mb-8">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                                Sign in to your account
+                            </h2>
+                        </div>
+
+                        <form className="space-y-6" onSubmit={handleSubmit}>
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-left mb-2">
+                                    Email address
+                                </label>
+                                <div>
+                                    <input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        autoComplete="email"
+                                        required
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                                        placeholder="Enter your email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-left mb-2">
+                                    Password
+                                </label>
+                                <div>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="current-password"
+                                        required
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                                        placeholder="Enter your password"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <input
+                                        id="remember-me"
+                                        name="remember-me"
+                                        type="checkbox"
+                                        className="h-4 w-4 text-black focus:ring-black border-gray-300 rounded"
+                                    />
+                                    <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                                        Remember me
+                                    </label>
+                                </div>
+
+                                <div className="text-sm">
+                                    <a href="#" className="font-medium text-gray-600 hover:text-gray-900">
+                                        Forgot your password?
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div>
+                                <button
+                                    type="submit"
+                                    className="btn-primary"
+                                >
+                                    Sign in
+                                </button>
+                            </div>
+                        </form>
+
+                        <div className="mt-8">
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300" />
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-gray-500">New to ContextPilot?</span>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <button
+                                    onClick={() => onNavigate('signup')}
+                                    className="btn-secondary w-full"
+                                >
+                                    Create your account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Signup Component - Updated to match design
+        function Signup({ onNavigate, onLogin }) {
+            const [formData, setFormData] = React.useState({
+                fullName: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+            });
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onLogin();
+                onNavigate('dashboard');
+            };
+
+            return (
+                <div className="min-h-screen bg-white flex flex-col justify-center">
+                    <div className="container">
+                        <div className="text-center mb-12">
+                            <h1 className="text-4xl font-bold text-gray-900 mb-4">ContextPilot</h1>
+                        </div>
+                        
+                        <div className="text-center mb-8">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                                Create your account
+                            </h2>
+                        </div>
+
+                        <form className="space-y-6" onSubmit={handleSubmit}>
+                            <div>
+                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 text-left mb-2">
+                                    Full name
+                                </label>
+                                <div>
+                                    <input
+                                        id="fullName"
+                                        name="fullName"
+                                        type="text"
+                                        autoComplete="name"
+                                        required
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                                        placeholder="Enter your full name"
+                                        value={formData.fullName}
+                                        onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-left mb-2">
+                                    Email address
+                                </label>
+                                <div>
+                                    <input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        autoComplete="email"
+                                        required
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                                        placeholder="Enter your email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-left mb-2">
+                                    Password
+                                </label>
+                                <div>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        required
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                                        placeholder="Create a password"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 text-left mb-2">
+                                    Confirm password
+                                </label>
+                                <div>
+                                    <input
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        required
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                                        placeholder="Confirm your password"
+                                        value={formData.confirmPassword}
+                                        onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center">
+                                <input
+                                    id="terms"
+                                    name="terms"
+                                    type="checkbox"
+                                    required
+                                    className="h-4 w-4 text-black focus:ring-black border-gray-300 rounded"
+                                />
+                                <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+                                    I agree to the <a href="#" className="text-gray-600 hover:text-gray-900 underline">Terms and Conditions</a>
+                                </label>
+                            </div>
+
+                            <div>
+                                <button
+                                    type="submit"
+                                    className="btn-primary"
+                                >
+                                    Create account
+                                </button>
+                            </div>
+                        </form>
+
+                        <div className="mt-8">
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-300" />
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-gray-500">Already have an account?</span>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <button
+                                    onClick={() => onNavigate('login')}
+                                    className="btn-secondary w-full"
+                                >
+                                    Sign in to your account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Meeting Card Component
+        function MeetingCard({ meeting }) {
+            const getStatusColor = (status) => {
+                switch (status) {
+                    case 'ready': return 'bg-green-500';
+                    case 'generating': return 'bg-yellow-500';
+                    case 'scheduled': return 'bg-blue-500';
+                    default: return 'bg-gray-500';
+                }
+            };
+
+            const getStatusText = (status) => {
+                switch (status) {
+                    case 'ready': return 'Brief Ready';
+                    case 'generating': return 'Generating...';
+                    case 'scheduled': return 'Scheduled';
+                    default: return 'Pending';
+                }
+            };
+
+            return (
+                <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer mb-4">
+                    <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="font-semibold text-gray-900">{meeting.title}</h3>
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(meeting.status)} text-white`}>
+                                    {getStatusText(meeting.status)}
+                                </span>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                                <div className="flex items-center space-x-1">
+                                    <i data-lucide="calendar" className="w-4 h-4"></i>
+                                    <span>{meeting.date}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                    <i data-lucide="clock" className="w-4 h-4"></i>
+                                    <span>{meeting.time}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                    <i data-lucide="users" className="w-4 h-4"></i>
+                                    <span>{meeting.attendees} attendees</span>
+                                </div>
+                            </div>
+
+                            <p className="text-gray-600 text-sm mb-3">{meeting.description}</p>
+
+                            <div className="flex items-center space-x-4">
+                                <button className="text-black hover:text-gray-700 font-medium text-sm flex items-center space-x-1">
+                                    <i data-lucide="file-text" className="w-4 h-4"></i>
+                                    <span>View Brief</span>
+                                </button>
+                                <button className="text-gray-600 hover:text-gray-700 font-medium text-sm">
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Dashboard Component - Updated to match design
+        function Dashboard({ onNavigate, onLogout }) {
+            const [meetings, setMeetings] = React.useState(mockMeetings);
+
+            const stats = [
+                { label: 'Meetings Today', value: '3', icon: 'calendar' },
+                { label: 'Briefs Ready', value: '2', icon: 'file-text' },
+                { label: 'Time Saved', value: '45min', icon: 'clock' },
+                { label: 'Team Members', value: '8', icon: 'users' }
+            ];
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    {/* Navigation */}
+                    <nav className="bg-white shadow-sm border-b border-gray-200">
+                        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                            <div className="flex items-center space-x-2">
+                                <h1 className="text-xl font-bold text-gray-900">ContextPilot</h1>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <button className="bg-black text-white font-medium py-2 px-4 rounded-lg flex items-center space-x-2">
+                                    <i data-lucide="plus" className="w-4 h-4"></i>
+                                    <span>New Meeting</span>
+                                </button>
+                                <button onClick={onLogout} className="p-2 text-gray-400 hover:text-gray-600">
+                                    <i data-lucide="log-out" className="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div className="max-w-7xl mx-auto px-6 py-8">
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            {stats.map((stat, index) => (
+                                <div key={index} className="bg-white rounded-lg border border-gray-200 p-6">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                                            <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                                        </div>
+                                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <i data-lucide={stat.icon} className="w-6 h-6 text-gray-600"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Upcoming Meetings */}
+                        <div className="grid lg:grid-cols-3 gap-8">
+                            <div className="lg:col-span-2">
+                                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-xl font-bold text-gray-900">Upcoming Meetings</h2>
+                                        <button className="text-black hover:text-gray-700 font-medium text-sm">
+                                            View all
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        {meetings.length > 0 ? (
+                                            meetings.map((meeting) => (
+                                                <MeetingCard key={meeting.id} meeting={meeting} />
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-12">
+                                                <i data-lucide="calendar" className="w-12 h-12 text-gray-300 mx-auto mb-4"></i>
+                                                <h3 className="text-lg font-medium text-gray-900 mb-2">No upcoming meetings</h3>
+                                                <p className="text-gray-500 mb-4">Connect your calendar to see your meetings here</p>
+                                                <button className="bg-black text-white font-medium py-2 px-4 rounded-lg">
+                                                    Connect Calendar
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Quick Actions Sidebar */}
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                                    <div className="space-y-3">
+                                        <button className="w-full bg-white text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 text-left">
+                                            Connect Google Calendar
+                                        </button>
+                                        <button className="w-full bg-white text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 text-left">
+                                            Import Documents
+                                        </button>
+                                        <button className="w-full bg-white text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 text-left">
+                                            Set Preferences
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Briefs</h3>
+                                    <div className="space-y-3">
+                                        <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                            <p className="font-medium text-gray-900">Q4 Planning Review</p>
+                                            <p className="text-sm text-gray-600">Generated 2 hours ago</p>
+                                        </div>
+                                        <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                            <p className="font-medium text-gray-900">Team Standup</p>
+                                            <p className="text-sm text-gray-600">Ready for tomorrow</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [currentPage, setCurrentPage] = React.useState('landing');
+            const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+            const handleNavigate = (page) => {
+                setCurrentPage(page);
+            };
+
+            const handleLogin = () => {
+                setIsLoggedIn(true);
+            };
+
+            const handleLogout = () => {
+                setIsLoggedIn(false);
+                setCurrentPage('landing');
+            };
+
+            // Update icons when component renders
+            React.useEffect(() => {
+                lucide.createIcons();
+            });
+
+            let currentComponent;
+            switch (currentPage) {
+                case 'login':
+                    currentComponent = <Login onNavigate={handleNavigate} onLogin={handleLogin} />;
+                    break;
+                case 'signup':
+                    currentComponent = <Signup onNavigate={handleNavigate} onLogin={handleLogin} />;
+                    break;
+                case 'dashboard':
+                    currentComponent = <Dashboard onNavigate={handleNavigate} onLogout={handleLogout} />;
+                    break;
+                default:
+                    currentComponent = <LandingPage onNavigate={handleNavigate} />;
+            }
+
+            return currentComponent;
+        }
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
